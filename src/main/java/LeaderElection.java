@@ -17,6 +17,8 @@ public class LeaderElection implements Watcher {
     leaderElection.connectToZooKeeperServer();
 
     leaderElection.run();
+    leaderElection.close();
+    System.out.println("Disconnected from ZooKeeper server! Current Thread ID: " + Thread.currentThread().getId());
   }
 
   private void run() throws InterruptedException {
@@ -29,12 +31,21 @@ public class LeaderElection implements Watcher {
     zooKeeper = new ZooKeeper(ZOOKEEPER_HOST, SESSION_TIMEOUT_MS, this);
   }
 
+  public void close() throws InterruptedException {
+    zooKeeper.close();
+  }
+
   @Override
   public void process(WatchedEvent event) {
     switch (event.getType()){
       case None:
         if (event.getState().equals(KeeperState.SyncConnected)) {
-          System.out.println("Successfully connected to ZooKeeper server!");
+          System.out.println("Successful connection event to ZooKeeper server received! Current Thread ID: " + Thread.currentThread().getId());
+        } else {
+          System.out.println("Zookeeper Disconnection event to Zookeeper server received! Current Thread ID: " + Thread.currentThread().getId());
+          synchronized (zooKeeper) {
+            zooKeeper.notifyAll();
+          }
         }
     }
   }
