@@ -11,10 +11,18 @@ public class LeaderElection implements Watcher {
 
   private ZooKeeper zooKeeper;
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, InterruptedException {
 
     LeaderElection leaderElection = new LeaderElection();
     leaderElection.connectToZooKeeperServer();
+
+    leaderElection.run();
+  }
+
+  private void run() throws InterruptedException {
+    synchronized (zooKeeper) {
+      zooKeeper.wait();
+    }
   }
 
   public void connectToZooKeeperServer() throws IOException {
