@@ -26,7 +26,7 @@ public class LeaderElection implements Watcher {
     LeaderElection leaderElection = new LeaderElection();
     leaderElection.connectToZooKeeperServer();
     leaderElection.createZnode();
-    leaderElection.determineLeaderOrFollower();
+    leaderElection.determineCurrentInstanceIsLeaderOrFollower();
 
     leaderElection.run();
     leaderElection.close();
@@ -55,7 +55,7 @@ public class LeaderElection implements Watcher {
     currentZnodeName = znodeActualCreationPath.replace(APPLICATION_ROOT_ZNODE_PATH + "/", "");
   }
 
-  public void determineLeaderOrFollower() throws InterruptedException, KeeperException {
+  public void determineCurrentInstanceIsLeaderOrFollower() throws InterruptedException, KeeperException {
     List<String> znodeChildren = zooKeeper.getChildren(APPLICATION_ROOT_ZNODE_PATH, false);
 
     Collections.sort(znodeChildren);
